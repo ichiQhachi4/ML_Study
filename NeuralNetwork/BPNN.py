@@ -34,21 +34,20 @@ class Neural_Network(object):
         # initial weight with random variables
         self.V = np.random.randn(self.inputSize, self.hiddenSize)
         self.W = np.random.randn(self.hiddenSize, self.outputSize)
-        self.GAMMA = np.zeros([self.hiddenSize], np.float32)    # 列向量
-        self.THETA = np.zeros([self.outputSize], np.float32)
-        self.output_H = np.zeros([self.hiddenSize], np.float32) # 列向量
-
-        self.output = np.zeros([self.outputSize], np.float32)
-        self.Y = np.zeros([self.outputSize], float)
-        self.X = np.zeros([self.inputSize], float)
-        self.gradientHO = np.zeros([self.outputSize], np.float32)
-        self.gradientIH = np.zeros([self.hiddenSize], np.float32)
+        self.GAMMA = np.zeros((1, self.hiddenSize))    # 列向量
+        self.THETA = np.zeros((1, self.outputSize))
+        self.output_H = np.zeros((1, self.hiddenSize)) # 列向量
+        self.output = np.zeros((1, self.outputSize))
+        self.Y = np.zeros((1, self.outputSize))
+        self.X = np.zeros((1, self.inputSize))
+        self.gradientHO = np.zeros((1, self.outputSize))
+        self.gradientIH = np.zeros((1, self.hiddenSize))
 
 
         
     # calculate output
     def output_ex(self):
-        output_H_temp = np.dot(self.X.reshape(1,self.inputSize), self.V)
+        output_H_temp = np.dot(self.X, self.V)
         self.output_H = sigmoid_v(output_H_temp - self.GAMMA)
         '''
         for h in range(self.hiddenSize):
@@ -56,7 +55,7 @@ class Neural_Network(object):
                 self.output_H[h] += self.V[i][h] * X[i]
             self.output_H[h] = sigmoid_v(self.output_H[h] - self.GAMMA[h])
         '''
-        output_temp = np.dot(self.output_H.reshape(1, self.hiddenSize), self.W)
+        output_temp = np.dot(self.output_H, self.W)
         self.Y = sigmoid_v(output_temp - self.THETA)
 
         '''
@@ -67,9 +66,9 @@ class Neural_Network(object):
         '''
     
     def generate(self, X):
-        output_H = np.dot(self.X.reshape(1, self.inputSize), self.V)
+        output_H = np.dot(self.X, self.V)
         output_H = sigmoid_v(output_H - self.GAMMA)
-        output = np.dot(output_H.reshape(1, self.hiddenSize), self.W)
+        output = np.dot(output_H, self.W)
         return sigmoid_v(output - self.THETA)
 
 
@@ -82,7 +81,7 @@ class Neural_Network(object):
         #self.gradientHO = gradient_v(self.Y, Y)
         # the vectorize function can't be applied to two vector!!!
         for j in range(self.outputSize):
-            self.gradientHO[j] = self.Y[j] * (1 - self.Y[j]) * (Y[j] - self.Y[j])
+            self.gradientHO[0][j] = self.Y[0][j] * (1 - self.Y[0][j]) * (Y[j] - self.Y[0][j])
         
     
 
@@ -95,8 +94,8 @@ class Neural_Network(object):
         for h in range(self.hiddenSize):
             acc = 0.0
             for j in range(self.outputSize):
-                acc += self.W[h][j] * self.gradientHO[j]
-            self.gradientIH[h] = self.output_H[h] * (1 - self.output_H[h]) * acc
+                acc += self.W[h][j] * self.gradientHO[0][j]
+            self.gradientIH[0][h] = self.output_H[0][h] * (1 - self.output_H[0][h]) * acc
 
 
     def update(self):
@@ -125,7 +124,7 @@ class Neural_Network(object):
 
             
     def test(self, X, Y):
-        Y_o = self.generate(X)
+        Y_o = np.transpose(self.generate(X))
 
         result = True
         for i in range(self.outputSize):

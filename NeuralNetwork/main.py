@@ -42,7 +42,7 @@ Y = np.array(Y)
 
 nn = Neural_Network(X, Y)
 print(nn.eta)
-for i in range(2000):
+for i in range(5000):
     nn.run()
 
 test =pd.read_csv("./dataset/irisTrainData.txt", )
