@@ -9,7 +9,7 @@ sigmoid_v = np.vectorize(sigmoid)
 class Neural_Network(object):
     def __init__(self):
         # initial parameters
-        self.inputSize = 3
+        self.inputSize = 4
         self.outputSize = 3
         self.hiddenSize = 3
         self.eta = 0.01
