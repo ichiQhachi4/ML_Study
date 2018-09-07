@@ -30,35 +30,31 @@ switcher = {
     5: five
 }
 
-train =pd.read_excel("./dataset/balance_uni_train.xls", )
-X = train.loc[:, ['a','b','c']]
-Y = train.loc[:,['y']]
+train =pd.read_csv("./dataset/irisTrainData.txt")
+print(train)
+X = train.loc[:, ['a','b','c','d']]
+print(X)
+Y = train.loc[:, ['x', 'y', 'z']]
 
 X = np.array(X)
-Y_o = np.array(Y)
-Y = []
-for i in range(300):
-    
-    Y.append(switcher[Y_o[i][0]]())
+Y = np.array(Y)
 
-nn = Neural_Network()
+
+nn = Neural_Network(X, Y)
 print(nn.eta)
-for j in range(200):
-    for i in range(300):
-        nn.run(X[i], Y[i])
+for i in range(2000):
+    nn.run()
 
-test =pd.read_excel("./dataset/balance_uni_test.xls", )
-X_test = test.loc[:, ['a','b','c']]
-Y_test = test.loc[:,['y']]
+test =pd.read_csv("./dataset/irisTrainData.txt", )
+X_test = test.loc[:, ['a','b','c','d']]
+Y_test = test.loc[:,['x','y','z']]
 X_test = np.array(X_test)
-Y_t = np.array(Y_test)
-Y_test = []
-for i in range(325):
-    Y_test.append(switcher[Y_t[i][0]]())
+Y_test = np.array(Y_test)
+
 
 success = 0
-for k in range(300):    
+for k in range(100):    
     if nn.test(X[k], Y[k]):
         success += 1
 print(success)
-print(success / 300)
+print(success / 100)
