@@ -3,8 +3,6 @@ import sys
 from BPNN import Neural_Network
 import numpy as np
 
-# this code is made by HoshinoTouko@touko.moe 
-import dataset.fakeData as fds
 
 '''
 class switcher:
