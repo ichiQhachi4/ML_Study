@@ -66,7 +66,7 @@ class Neural_Network(object):
         '''
     
     def generate(self, X):
-        output_H = np.dot(self.X, self.V)
+        output_H = np.dot(X, self.V)
         output_H = sigmoid_v(output_H - self.GAMMA)
         output = np.dot(output_H, self.W)
         return sigmoid_v(output - self.THETA)
@@ -118,22 +118,23 @@ class Neural_Network(object):
         for i in range(self.times):
             self.X = self.X_train[i].reshape(1,self.inputSize)
             self.output_ex()
+
             self.g_ex(self.Y_train[i])
             self.e_ex()
             self.update()
             self.output_ex()
+
             
-            np.random.shuffle(train)
-            self.X_train = train[:, 0:4]
-            self.Y_train = train[:, 4:7]
+            
 
             
     def test(self, X, Y):
-        Y_o = np.transpose(self.generate(X))
+        Y_o = self.generate(X).reshape(self.outputSize)
+
 
         result = True
         for i in range(self.outputSize):
-            if abs(Y[i] - Y_o[i]) >= 0.3:
+            if Y[i] != np.round(Y_o[i]):
                 return False
         
         return result
