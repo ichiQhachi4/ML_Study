@@ -4,8 +4,9 @@ from BPNN import Neural_Network
 import numpy as np
 
 # this code is made by HoshinoTouko@touko.moe 
-import dataset.fakeData as fd
+import dataset.fakeData as fds
 
+'''
 class switcher:
     def zero():
         return [0,0,0]
@@ -33,7 +34,7 @@ class switcher:
         4: four,
         5: five
     }
-
+'''
 train =pd.read_csv("./dataset/irisTrainData.txt")
 train = np.array(train)
 np.random.shuffle(train)
