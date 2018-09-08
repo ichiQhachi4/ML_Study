@@ -28,35 +28,35 @@ class Neural_Network(object):
         self.outputSize = Y.shape[1]
         self.times = X.shape[0]       
         
-        self.hiddenSize = 3
-        self.eta = 0.1
+        self.hiddenSize = 5
+        self.eta = 0.05
 
         # initial weight with random variables
         self.V = np.random.randn(self.inputSize, self.hiddenSize)
         self.W = np.random.randn(self.hiddenSize, self.outputSize)
         self.GAMMA = np.zeros((1, self.hiddenSize))    # 列向量
         self.THETA = np.zeros((1, self.outputSize))
-        self.output_H = np.zeros((1, self.hiddenSize)) # 列向量
+        self.B = np.zeros((1, self.hiddenSize)) # 列向量
         self.output = np.zeros((1, self.outputSize))
         self.Y = np.zeros((1, self.outputSize))
         self.X = np.zeros((1, self.inputSize))
-        self.gradientHO = np.zeros((1, self.outputSize))
-        self.gradientIH = np.zeros((1, self.hiddenSize))
+        self.g = np.zeros((1, self.outputSize))
+        self.e = np.zeros((1, self.hiddenSize))
 
 
         
     # calculate output
     def output_ex(self):
-        output_H_temp = np.dot(self.X, self.V)
-        self.output_H = sigmoid_v(output_H_temp - self.GAMMA)
+        ALPHA = np.dot(self.X, self.V)
+        self.B = sigmoid_v(ALPHA - self.GAMMA)
         '''
         for h in range(self.hiddenSize):
             for i in range(self.inputSize):
                 self.output_H[h] += self.V[i][h] * X[i]
             self.output_H[h] = sigmoid_v(self.output_H[h] - self.GAMMA[h])
         '''
-        output_temp = np.dot(self.output_H, self.W)
-        self.Y = sigmoid_v(output_temp - self.THETA)
+        BETA = np.dot(self.B, self.W)
+        self.Y = sigmoid_v(BETA - self.THETA)
 
         '''
         for j in range(self.outputSize):
@@ -74,53 +74,58 @@ class Neural_Network(object):
 
 
     # calculate gradient of weight between Hidden and Output
-    def gradientHO_ex(self, Y):
+    def g_ex(self, Y):
         # print(self.Y)
         # print(Y)
         
-        #self.gradientHO = gradient_v(self.Y, Y)
+        #self.g = gradient_v(self.Y, Y)
         # the vectorize function can't be applied to two vector!!!
         for j in range(self.outputSize):
-            self.gradientHO[0][j] = self.Y[0][j] * (1 - self.Y[0][j]) * (Y[j] - self.Y[0][j])
+            self.g[0][j] = self.Y[0][j] * (1 - self.Y[0][j]) * (Y[j] - self.Y[0][j])
         
     
 
 
     # calculate gradient of weight between Input and Hidden
-    def gradientIH_ex(self):
-        # acc = self.W * self.gradientHO
-        # self.gradientIH = gradient2_v(self.output_H, acc)
+    def e_ex(self):
+        # acc = self.W * self.g
+        # self.e = gradient2_v(self.output_H, acc)
         
         for h in range(self.hiddenSize):
             acc = 0.0
             for j in range(self.outputSize):
-                acc += self.W[h][j] * self.gradientHO[0][j]
-            self.gradientIH[0][h] = self.output_H[0][h] * (1 - self.output_H[0][h]) * acc
+                acc += self.W[h][j] * self.g[0][j]
+            self.e[0][h] = self.B[0][h] * (1 - self.B[0][h]) * acc
 
 
     def update(self):
-        self.THETA = self.THETA - self.eta * self.gradientHO
-        self.GAMMA = self.GAMMA - self.eta * self.gradientIH
-        self.W = self.W + self.eta * np.dot(self.gradientHO.reshape(self.hiddenSize,1), self.output_H.reshape(1,self.outputSize))
-        self.V = self.V + self.eta * np.dot(self.X.reshape(self.inputSize,1), self.gradientIH.reshape(1,self.hiddenSize))
+        self.THETA = self.THETA - self.eta * self.g
+        self.GAMMA = self.GAMMA - self.eta * self.e
+        self.W = self.W + self.eta * np.dot(np.transpose(self.B), self.g)
+        self.V = self.V + self.eta * np.dot(np.transpose(self.X), self.e)
         '''
         for j in range(self.outputSize):
-            self.THETA[j] = self.THETA[j] - self.eta * self.gradientHO[j]
+            self.THETA[j] = self.THETA[j] - self.eta * self.g[j]
             for h in range(self.hiddenSize):
-                self.W[h][j] = self.W[h][j] + self.eta * self.gradientHO[j] * self.output_H[h]
+                self.W[h][j] = self.W[h][j] + self.eta * self.g[j] * self.output_H[h]
         for h in range(self.hiddenSize):
-            self.GAMMA[h] = self.GAMMA[h] - self.eta * self.gradientIH[h]
+            self.GAMMA[h] = self.GAMMA[h] - self.eta * self.e[h]
             for i in range(self.inputSize):
-                self.V[i][h] = self.V[i][h] + self.eta * self.gradientIH[h] * self.X[i]
+                self.V[i][h] = self.V[i][h] + self.eta * self.e[h] * self.X[i]
         '''
 
     def run(self):
         for i in range(self.times):
-            self.X = self.X_train[i]
+            self.X = self.X_train[i].reshape(1,self.inputSize)
             self.output_ex()
-            self.gradientHO_ex(self.Y_train[i])
-            self.gradientIH_ex()
+            self.g_ex(self.Y_train[i])
+            self.e_ex()
             self.update()
+            self.output_ex()
+            
+            np.random.shuffle(train)
+            self.X_train = train[:, 0:4]
+            self.Y_train = train[:, 4:7]
 
             
     def test(self, X, Y):
@@ -128,9 +133,7 @@ class Neural_Network(object):
 
         result = True
         for i in range(self.outputSize):
-            if abs(Y[i] - Y_o[i]) >= 0.1:
-                print (Y)
-                print(Y_o)
+            if abs(Y[i] - Y_o[i]) >= 0.3:
                 return False
         
         return result

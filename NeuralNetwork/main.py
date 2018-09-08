@@ -31,18 +31,18 @@ switcher = {
 }
 
 train =pd.read_csv("./dataset/irisTrainData.txt")
-print(train)
-X = train.loc[:, ['a','b','c','d']]
-print(X)
-Y = train.loc[:, ['x', 'y', 'z']]
+train = np.array(train)
+np.random.shuffle(train)
 
-X = np.array(X)
-Y = np.array(Y)
+X = train[:, 0:4]
+
+Y = train[:, 4:7]
+
 
 
 nn = Neural_Network(X, Y)
 print(nn.eta)
-for i in range(5000):
+for i in range(50):
     nn.run()
 
 test =pd.read_csv("./dataset/irisTrainData.txt", )
@@ -51,10 +51,16 @@ Y_test = test.loc[:,['x','y','z']]
 X_test = np.array(X_test)
 Y_test = np.array(Y_test)
 
+def tests(nn):
+    success = 0
+    for k in range(20):    
+        if nn.test(X[k], Y[k]):
+            success += 1
+    print(success)
+    print(success / 20)
 
-success = 0
-for k in range(100):    
-    if nn.test(X[k], Y[k]):
-        success += 1
-print(success)
-print(success / 100)
+for i in [50, 100, 300, 500, 1000, 3000]:
+    for j in range(i):
+        nn.run()
+    tests(nn)
+
