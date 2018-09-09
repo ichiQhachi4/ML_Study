@@ -28,15 +28,15 @@ class Neural_Network(object):
         self.outputSize = Y.shape[1]
         self.times = X.shape[0]       
         
-        self.hiddenSize = 5
+        self.hiddenSize = 20
         self.eta = 0.05
 
         # initial weight with random variables
         self.V = np.random.randn(self.inputSize, self.hiddenSize)
         self.W = np.random.randn(self.hiddenSize, self.outputSize)
-        self.GAMMA = np.zeros((1, self.hiddenSize))    # 列向量
+        self.GAMMA = np.zeros((1, self.hiddenSize))
         self.THETA = np.zeros((1, self.outputSize))
-        self.B = np.zeros((1, self.hiddenSize)) # 列向量
+        self.B = np.zeros((1, self.hiddenSize))
         self.output = np.zeros((1, self.outputSize))
         self.Y = np.zeros((1, self.outputSize))
         self.X = np.zeros((1, self.inputSize))

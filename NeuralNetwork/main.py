@@ -3,41 +3,20 @@ import sys
 from BPNN import Neural_Network
 import numpy as np
 
+from sklearn.cross_validation import train_test_split
 
-'''
-class switcher:
-    def zero():
-        return [0,0,0]
 
-    def one():
-        return [0,0,1]
+train =pd.read_csv("./dataset/some_datasets/uspst_uni.txt",sep="\t",header=None)
+X = np.array(train)
+train =pd.read_csv("./dataset/some_datasets/uspst_uni_label.txt",sep="\t",header=None)
+Y = np.array(train)
+labels = []
+for i in range(Y.shape[0]):
+    label = list(('0000' + str(bin(int(Y[i]))).replace('0b', ''))[-4:])
+    labels.append(list(map(int, label)))
+Y = np.array(labels)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3)
 
-    def two():
-        return [0,1,0]
-
-    def three():
-        return [0,1,1]
-
-    def four():
-        return [1,0,0]
-
-    def five():
-        return [1,0,1]
-
-    switcher = {
-        0: zero,
-        1: one,
-        2: two,
-        3: three,
-        4: four,
-        5: five
-    }
-'''
-train =pd.read_csv("./dataset/irisTrainData.txt")
-train = np.array(train)
-np.random.shuffle(train)
-X = train[:, 0:4]
-Y = train[:, 4:7]
 '''
 train = fd.generate_sin_data_for_test()
 a = np.array(30 * [1])
@@ -46,27 +25,30 @@ X = np.array(train)
 Y = np.concatenate((a,b))
 Y = Y.reshape(60,1)
 '''
-nn = Neural_Network(X, Y)
+
+nn = Neural_Network(X_train, Y_train)
 print(nn.eta)
 
-
+'''
 test =pd.read_csv("./dataset/irisTestData.txt", )
 X_test = test.loc[:, ['a','b','c','d']]
 Y_test = test.loc[:,['x','y','z']]
 X_test = np.array(X_test)
 Y_test = np.array(Y_test)
-
+'''
 
 def tests(nn):
     success = 0
-    for k in range(30):    
+    for k in range(300):    
         if nn.test(X_test[k], Y_test[k]):
             success += 1
     print(success)
-    print(success / 30)
-
-for i in [20, 20, 20, 20, 20, 20]:
-    ## it takes about 40 epoches to convergence
+    print("precision: " + str(success / 300))
+j=0
+for i in 20*[10]:
+    # convergence at 100-200 epoches
     nn.train(i)
+    j+=i
+    print("epoches: "+ str(j))
     tests(nn)
 
