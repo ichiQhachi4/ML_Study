@@ -114,15 +114,16 @@ class Neural_Network(object):
                 self.V[i][h] = self.V[i][h] + self.eta * self.e[h] * self.X[i]
         '''
 
-    def run(self):
-        for i in range(self.times):
-            self.X = self.X_train[i].reshape(1,self.inputSize)
-            self.output_ex()
+    def train(self, epoches=100):
+        for k in range(epoches):
+            for i in range(self.times):
+                self.X = self.X_train[i].reshape(1,self.inputSize)
+                self.output_ex()
 
-            self.g_ex(self.Y_train[i])
-            self.e_ex()
-            self.update()
-            self.output_ex()
+                self.g_ex(self.Y_train[i])
+                self.e_ex()
+                self.update()
+                self.output_ex()
 
             
             

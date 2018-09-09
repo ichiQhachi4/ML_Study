@@ -67,7 +67,6 @@ def tests(nn):
 
 for i in [20, 20, 20, 20, 20, 20]:
     ## it takes about 40 epoches to convergence
-    for j in range(i):
-        nn.run()
+    nn.train(i)
     tests(nn)
 
