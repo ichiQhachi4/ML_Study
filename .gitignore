@@ -109,7 +109,3 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# mypy
-.mypy_cache/
-NeuralNetwork/__pycache__/BPNN.cpython-36.pyc
-NeuralNetwork/__pycache__/BPNN.cpython-36.pyc
