@@ -112,3 +112,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 NeuralNetwork/__pycache__/BPNN.cpython-36.pyc
+
